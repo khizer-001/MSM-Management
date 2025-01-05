@@ -14,8 +14,9 @@ import axios from 'axios'
 // ** Demo Components Imports
 import PreviewCard from 'src/views/pages/images/preview/PreviewCard'
 import PreviewActions from 'src/views/pages/images/preview/PreviewActions'
-import AddPaymentDrawer from 'src/views/pages/images/shared-drawer/AddPaymentDrawer'
-import SendInvoiceDrawer from 'src/views/pages/images/shared-drawer/SendInvoiceDrawer'
+
+// import AddPaymentDrawer from 'src/views/pages/images/shared-drawer/AddPaymentDrawer'
+// import SendInvoiceDrawer from 'src/views/pages/images/shared-drawer/SendInvoiceDrawer'
 
 const InvoicePreview = ({ id }) => {
   // ** State
@@ -52,8 +53,8 @@ const InvoicePreview = ({ id }) => {
             />
           </Grid>
         </Grid>
-        <SendInvoiceDrawer open={sendInvoiceOpen} toggle={toggleSendInvoiceDrawer} />
-        <AddPaymentDrawer open={addPaymentOpen} toggle={toggleAddPaymentDrawer} />
+        {/* <SendInvoiceDrawer open={sendInvoiceOpen} toggle={toggleSendInvoiceDrawer} />
+        <AddPaymentDrawer open={addPaymentOpen} toggle={toggleAddPaymentDrawer} /> */}
       </>
     )
   } else if (error) {
