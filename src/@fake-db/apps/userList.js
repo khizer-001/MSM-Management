@@ -14,7 +14,7 @@ const data = {
       contact: '(479) 232-9151',
       email: 'gslixby0@abc.net.au',
       currentPlan: 'enterprise',
-      status: 'inactive',
+      status: 'block',
       avatar: '',
       avatarColor: 'primary'
     },
@@ -29,7 +29,7 @@ const data = {
       contact: '(472) 607-9137',
       email: 'hredmore1@imgur.com',
       currentPlan: 'team',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/3.png'
     },
     {
@@ -57,7 +57,7 @@ const data = {
       contact: '(923) 690-6806',
       email: 'crisby3@wordpress.com',
       currentPlan: 'team',
-      status: 'inactive',
+      status: 'block',
       avatar: '/images/avatars/3.png'
     },
     {
@@ -71,7 +71,7 @@ const data = {
       contact: '(669) 914-1078',
       email: 'mhurran4@yahoo.co.jp',
       currentPlan: 'enterprise',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/1.png'
     },
     {
@@ -100,7 +100,7 @@ const data = {
       contact: '(825) 977-8152',
       email: 'bgallemore6@boston.com',
       currentPlan: 'company',
-      status: 'pending',
+      status: 'suspended',
       avatar: '',
       avatarColor: 'warning'
     },
@@ -115,7 +115,7 @@ const data = {
       contact: '(187) 440-0934',
       email: 'kliger7@vinaora.com',
       currentPlan: 'enterprise',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/4.png'
     },
     {
@@ -129,7 +129,7 @@ const data = {
       contact: '(978) 146-5443',
       email: 'fscotfurth8@dailymotion.com',
       currentPlan: 'team',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/2.png'
     },
     {
@@ -143,7 +143,7 @@ const data = {
       contact: '(589) 284-6732',
       email: 'jbellany9@kickstarter.com',
       currentPlan: 'company',
-      status: 'inactive',
+      status: 'block',
       avatar: '/images/avatars/5.png'
     },
     {
@@ -157,7 +157,7 @@ const data = {
       contact: '(176) 532-6824',
       email: 'jwharltona@oakley.com',
       currentPlan: 'team',
-      status: 'inactive',
+      status: 'block',
       avatar: '/images/avatars/4.png'
     },
     {
@@ -171,7 +171,7 @@ const data = {
       contact: '(234) 464-0600',
       email: 'shallamb@hugedomains.com',
       currentPlan: 'team',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/5.png'
     },
     {
@@ -185,7 +185,7 @@ const data = {
       contact: '(907) 284-5083',
       email: 'ypottiec@privacy.gov.au',
       currentPlan: 'basic',
-      status: 'inactive',
+      status: 'block',
       avatar: '/images/avatars/7.png'
     },
     {
@@ -285,7 +285,7 @@ const data = {
       contact: '(569) 683-1292',
       email: 'wburlandj@uiuc.edu',
       currentPlan: 'team',
-      status: 'inactive',
+      status: 'block',
       avatar: '/images/avatars/6.png'
     },
     {
@@ -313,7 +313,7 @@ const data = {
       contact: '(593) 624-0222',
       email: 'jlysterl@guardian.co.uk',
       currentPlan: 'company',
-      status: 'inactive',
+      status: 'block',
       avatar: '/images/avatars/8.png'
     },
     {
@@ -327,7 +327,7 @@ const data = {
       contact: '(254) 845-4107',
       email: 'kskitterelm@ainyx.com',
       currentPlan: 'basic',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/3.png'
     },
     {
@@ -341,7 +341,7 @@ const data = {
       contact: '(700) 783-7498',
       email: 'chatherleighn@washington.edu',
       currentPlan: 'team',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/2.png'
     },
     {
@@ -355,7 +355,7 @@ const data = {
       contact: '(227) 598-1841',
       email: 'amiccoo@whitehouse.gov',
       currentPlan: 'enterprise',
-      status: 'pending',
+      status: 'suspended',
       avatar: '',
       avatarColor: 'error'
     },
@@ -370,7 +370,7 @@ const data = {
       contact: '(582) 516-1324',
       email: 'hhassonp@bizjournals.com',
       currentPlan: 'basic',
-      status: 'inactive',
+      status: 'block',
       avatar: '/images/avatars/4.png'
     },
     {
@@ -427,7 +427,7 @@ const data = {
       contact: '(332) 803-1983',
       email: 'imallindinet@shinystat.com',
       currentPlan: 'team',
-      status: 'pending',
+      status: 'suspended',
       avatar: '',
       avatarColor: 'info'
     },
@@ -442,7 +442,7 @@ const data = {
       contact: '(551) 379-7460',
       email: 'gmeinekenu@hc360.com',
       currentPlan: 'basic',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/1.png'
     },
     {
@@ -456,7 +456,7 @@ const data = {
       contact: '(974) 829-0911',
       email: 'rsnowballv@indiegogo.com',
       currentPlan: 'basic',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/5.png'
     },
     {
@@ -498,7 +498,7 @@ const data = {
       contact: '(350) 589-8520',
       email: 'smacgilfoyley@bigcartel.com',
       currentPlan: 'company',
-      status: 'pending',
+      status: 'suspended',
       avatar: '',
       avatarColor: 'error'
     },
@@ -513,7 +513,7 @@ const data = {
       contact: '(882) 933-2180',
       email: 'brosebothamz@tripadvisor.com',
       currentPlan: 'team',
-      status: 'inactive',
+      status: 'block',
       avatar: '',
       avatarColor: 'success'
     },
@@ -528,7 +528,7 @@ const data = {
       contact: '(610) 343-1024',
       email: 'shebblethwaite10@arizona.edu',
       currentPlan: 'company',
-      status: 'inactive',
+      status: 'block',
       avatar: '/images/avatars/1.png'
     },
     {
@@ -542,7 +542,7 @@ const data = {
       contact: '(365) 277-2986',
       email: 'mpiccard11@vimeo.com',
       currentPlan: 'enterprise',
-      status: 'inactive',
+      status: 'block',
       avatar: '/images/avatars/1.png'
     },
     {
@@ -556,7 +556,7 @@ const data = {
       contact: '(531) 731-0928',
       email: 'twidmore12@bravesites.com',
       currentPlan: 'team',
-      status: 'pending',
+      status: 'suspended',
       avatar: '',
       avatarColor: 'primary'
     },
@@ -585,7 +585,7 @@ const data = {
       contact: '(315) 329-3578',
       email: 'ebaldetti14@theguardian.com',
       currentPlan: 'team',
-      status: 'pending',
+      status: 'suspended',
       avatar: '',
       avatarColor: 'info'
     },
@@ -600,7 +600,7 @@ const data = {
       contact: '(323) 175-6741',
       email: 'brossiter15@craigslist.org',
       currentPlan: 'team',
-      status: 'inactive',
+      status: 'block',
       avatar: '',
       avatarColor: 'warning'
     },
@@ -615,7 +615,7 @@ const data = {
       contact: '(242) 952-0916',
       email: 'mmcnirlan16@hc360.com',
       currentPlan: 'basic',
-      status: 'inactive',
+      status: 'block',
       avatar: '',
       avatarColor: 'error'
     },
@@ -645,7 +645,7 @@ const data = {
       contact: '(659) 385-6808',
       email: 'cperot18@goo.ne.jp',
       currentPlan: 'team',
-      status: 'pending',
+      status: 'suspended',
       avatar: '/images/avatars/3.png'
     },
     {
@@ -659,7 +659,7 @@ const data = {
       contact: '(200) 586-2264',
       email: 'soffner19@mac.com',
       currentPlan: 'enterprise',
-      status: 'pending',
+      status: 'suspended',
       avatar: '',
       avatarColor: 'primary'
     },
@@ -688,7 +688,7 @@ const data = {
       contact: '(344) 262-7270',
       email: 'owind1b@yandex.ru',
       currentPlan: 'basic',
-      status: 'pending',
+      status: 'suspended',
       avatar: '',
       avatarColor: 'error'
     },
@@ -703,7 +703,7 @@ const data = {
       contact: '(694) 676-1275',
       email: 'pdurber1c@gov.uk',
       currentPlan: 'team',
-      status: 'inactive',
+      status: 'block',
       avatar: '',
       avatarColor: 'warning'
     },

@@ -1,64 +1,62 @@
 // ** React Imports
-import { useState, useEffect, forwardRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
-// ** Next Import
+// ** Next Imports
 import Link from 'next/link'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
-import Tooltip from '@mui/material/Tooltip'
-import { styled } from '@mui/material/styles'
+import Menu from '@mui/material/Menu'
+import Grid from '@mui/material/Grid'
+import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
-import CardHeader from '@mui/material/CardHeader'
 import IconButton from '@mui/material/IconButton'
-import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
+import CardHeader from '@mui/material/CardHeader'
+import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
-import Select from '@mui/material/Select'
 import { DataGrid } from '@mui/x-data-grid'
+import Select from '@mui/material/Select'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
-// ** Third Party Imports
-import format from 'date-fns/format'
-import DatePicker from 'react-datepicker'
-
-// ** Store & Actions Imports
+// ** Store Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchData, deleteInvoice } from 'src/store/apps/invoice'
-
-// ** Utils Import
-import { getInitials } from 'src/@core/utils/get-initials'
 
 // ** Custom Components Imports
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
-import OptionsMenu from 'src/@core/components/option-menu'
+import CardStatsHorizontalWithDetails from 'src/@core/components/card-statistics/card-stats-horizontal-with-details'
+
+// ** Utils Import
+import { getInitials } from 'src/@core/utils/get-initials'
+
+// ** Actions Imports
+import { fetchData, deleteUser } from 'src/store/apps/user'
+
+// ** Third Party Components
+import axios from 'axios'
+
+// ** Custom Table Components Imports
 import TableHeader from 'src/views/pages/images/list/TableHeader'
+import AddUserDrawer from 'src/views/pages/images/list/AddUserDrawer'
 
-// ** Styled Components
-import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+// ** renders client column
+const userRoleObj = {
+  admin: { icon: 'tabler:device-laptop', color: 'secondary' },
+  author: { icon: 'tabler:circle-check', color: 'success' },
+  editor: { icon: 'tabler:edit', color: 'info' },
+  maintainer: { icon: 'tabler:chart-pie-2', color: 'primary' },
+  subscriber: { icon: 'tabler:user', color: 'warning' }
+}
 
-// ** Styled component for the link in the dataTable
-const LinkStyled = styled(Link)(({ theme }) => ({
-  fontSize: '1rem',
-  textDecoration: 'none',
-  color: theme.palette.primary.main
-}))
-
-// ** Vars
-const invoiceStatusObj = {
-  Sent: { color: 'secondary', icon: 'tabler:circle-check' },
-  Paid: { color: 'success', icon: 'tabler:circle-half-2' },
-  Draft: { color: 'primary', icon: 'tabler:device-floppy' },
-  'Partial Payment': { color: 'warning', icon: 'tabler:chart-pie' },
-  'Past Due': { color: 'error', icon: 'tabler:alert-circle' },
-  Downloaded: { color: 'info', icon: 'tabler:arrow-down-circle' }
+const userStatusObj = {
+  active: 'success',
+  block: 'error',
+  suspended: 'warning'
 }
 
 // ** renders client column
@@ -69,76 +67,106 @@ const renderClient = row => {
     return (
       <CustomAvatar
         skin='light'
-        color={row.avatarColor || 'primary'}
-        sx={{ mr: 2.5, fontSize: '1rem', width: 38, height: 38, fontWeight: 500 }}
+        color={row.avatarColor}
+        sx={{ mr: 2.5, width: 38, height: 38, fontSize: '1rem', fontWeight: 500 }}
       >
-        {getInitials(row.name || 'John Doe')}
+        {getInitials(row.fullName ? row.fullName : 'John Doe')}
       </CustomAvatar>
     )
   }
 }
 
-const defaultColumns = [
-  {
-    flex: 0.1,
-    field: 'id',
-    minWidth: 100,
-    headerName: 'ID',
-    renderCell: ({ row }) => <LinkStyled href={`/images/preview/${row.id}`}>{`#${row.id}`}</LinkStyled>
-  },
-  {
-    flex: 0.1,
-    minWidth: 80,
-    field: 'invoiceStatus',
-    renderHeader: () => <Icon icon='tabler:trending-up' />,
-    renderCell: ({ row }) => {
-      const { dueDate, balance, invoiceStatus } = row
-      const color = invoiceStatusObj[invoiceStatus] ? invoiceStatusObj[invoiceStatus].color : 'primary'
+const RowOptions = ({ id }) => {
+  // ** Hooks
+  const dispatch = useDispatch()
 
-      return (
-        <Tooltip
-          title={
-            <div>
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
-                {invoiceStatus}
-              </Typography>
-              <br />
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
-                Balance:
-              </Typography>{' '}
-              {balance}
-              <br />
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
-                Due Date:
-              </Typography>{' '}
-              {dueDate}
-            </div>
-          }
+  // ** State
+  const [anchorEl, setAnchorEl] = useState(null)
+  const rowOptionsOpen = Boolean(anchorEl)
+
+  const handleRowOptionsClick = event => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleRowOptionsClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleDelete = () => {
+    dispatch(deleteUser(id))
+    handleRowOptionsClose()
+  }
+
+  return (
+    <>
+      <IconButton size='small' onClick={handleRowOptionsClick}>
+        <Icon icon='tabler:dots-vertical' />
+      </IconButton>
+      <Menu
+        keepMounted
+        anchorEl={anchorEl}
+        open={rowOptionsOpen}
+        onClose={handleRowOptionsClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        PaperProps={{ style: { minWidth: '8rem' } }}
+      >
+        <MenuItem
+          component={Link}
+          sx={{ '& svg': { mr: 2 } }}
+          href='/apps/user/view/account'
+          onClick={handleRowOptionsClose}
         >
-          <CustomAvatar skin='light' color={color} sx={{ width: '1.875rem', height: '1.875rem' }}>
-            <Icon icon={invoiceStatusObj[invoiceStatus].icon} />
-          </CustomAvatar>
-        </Tooltip>
-      )
-    }
-  },
+          <Icon icon='tabler:eye' fontSize={20} />
+          View
+        </MenuItem>
+        <MenuItem onClick={handleRowOptionsClose} sx={{ '& svg': { mr: 2 } }}>
+          <Icon icon='tabler:edit' fontSize={20} />
+          Edit
+        </MenuItem>
+        <MenuItem onClick={handleDelete} sx={{ '& svg': { mr: 2 } }}>
+          <Icon icon='tabler:trash' fontSize={20} />
+          Delete
+        </MenuItem>
+      </Menu>
+    </>
+  )
+}
+
+const columns = [
   {
     flex: 0.25,
-    field: 'name',
-    minWidth: 320,
-    headerName: 'Client',
+    minWidth: 280,
+    field: 'fullName',
+    headerName: 'Image Name',
     renderCell: ({ row }) => {
-      const { name, companyEmail } = row
+      const { fullName, email } = row
 
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography noWrap sx={{ color: 'text.secondary', fontWeight: 500 }}>
-              {name}
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+            <Typography
+              noWrap
+              component={Link}
+              href='/apps/user/view/account'
+              sx={{
+                fontWeight: 500,
+                textDecoration: 'none',
+                color: 'text.secondary',
+                '&:hover': { color: 'primary.main' }
+              }}
+            >
+              {fullName}
             </Typography>
             <Typography noWrap variant='body2' sx={{ color: 'text.disabled' }}>
-              {companyEmail}
+              {email}
             </Typography>
           </Box>
         </Box>
@@ -146,211 +174,235 @@ const defaultColumns = [
     }
   },
   {
-    flex: 0.1,
-    minWidth: 100,
-    field: 'total',
-    headerName: 'Total',
-    renderCell: ({ row }) => <Typography sx={{ color: 'text.secondary' }}>{`$${row.total || 0}`}</Typography>
+    flex: 0.15,
+    field: 'role',
+    minWidth: 170,
+    headerName: 'Role',
+    renderCell: ({ row }) => {
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <CustomAvatar
+            skin='light'
+            sx={{ mr: 4, width: 30, height: 30 }}
+            color={userRoleObj[row.role].color || 'primary'}
+          >
+            <Icon icon={userRoleObj[row.role].icon} />
+          </CustomAvatar>
+          <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+            {row.role}
+          </Typography>
+        </Box>
+      )
+    }
   },
   {
     flex: 0.15,
-    minWidth: 140,
-    field: 'issuedDate',
-    headerName: 'Issued Date',
-    renderCell: ({ row }) => <Typography sx={{ color: 'text.secondary' }}>{row.issuedDate}</Typography>
+    minWidth: 120,
+    headerName: 'Plan',
+    field: 'currentPlan',
+    renderCell: ({ row }) => {
+      return (
+        <Typography noWrap sx={{ fontWeight: 500, color: 'text.secondary', textTransform: 'capitalize' }}>
+          {row.currentPlan}
+        </Typography>
+      )
+    }
+  },
+  {
+    flex: 0.15,
+    minWidth: 190,
+    field: 'billing',
+    headerName: 'Date',
+    renderCell: ({ row }) => {
+      return (
+        <Typography noWrap sx={{ color: 'text.secondary' }}>
+          {row.billing}
+        </Typography>
+      )
+    }
+  },
+  {
+    flex: 0.1,
+    minWidth: 110,
+    field: 'status',
+    headerName: 'Status',
+    renderCell: ({ row }) => {
+      return (
+        <CustomChip
+          rounded
+          skin='light'
+          size='small'
+          label={row.status}
+          color={userStatusObj[row.status]}
+          sx={{ textTransform: 'capitalize' }}
+        />
+      )
+    }
   },
   {
     flex: 0.1,
     minWidth: 100,
-    field: 'balance',
-    headerName: 'Balance',
-    renderCell: ({ row }) => {
-      return row.balance !== 0 ? (
-        <Typography sx={{ color: 'text.secondary' }}>{row.balance}</Typography>
-      ) : (
-        <CustomChip rounded size='small' skin='light' color='success' label='Paid' />
-      )
-    }
+    sortable: false,
+    field: 'actions',
+    headerName: 'Actions',
+    renderCell: ({ row }) => <RowOptions id={row.id} />
   }
 ]
-/* eslint-disable */
-const CustomInput = forwardRef((props, ref) => {
-  const startDate = props.start !== null ? format(props.start, 'MM/dd/yyyy') : ''
-  const endDate = props.end !== null ? ` - ${format(props.end, 'MM/dd/yyyy')}` : null
-  const value = `${startDate}${endDate !== null ? endDate : ''}`
-  props.start === null && props.dates.length && props.setDates ? props.setDates([]) : null
-  const updatedProps = { ...props }
-  delete updatedProps.setDates
-  return <TextField fullWidth inputRef={ref} {...updatedProps} label={props.label || ''} value={value} />
-})
 
-/* eslint-enable */
-const InvoiceList = () => {
+const UserList = ({ apiData }) => {
   // ** State
-  const [dates, setDates] = useState([])
+  const [role, setRole] = useState('')
+  const [plan, setPlan] = useState('')
   const [value, setValue] = useState('')
-  const [statusValue, setStatusValue] = useState('')
-  const [endDateRange, setEndDateRange] = useState(null)
-  const [selectedRows, setSelectedRows] = useState([])
-  const [startDateRange, setStartDateRange] = useState(null)
+  const [status, setStatus] = useState('')
+  const [addUserOpen, setAddUserOpen] = useState(false)
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
 
   // ** Hooks
   const dispatch = useDispatch()
-  const store = useSelector(state => state.invoice)
+  const store = useSelector(state => state.user)
   useEffect(() => {
     dispatch(
       fetchData({
-        dates,
+        role,
+        status,
         q: value,
-        status: statusValue
+        currentPlan: plan
       })
     )
-  }, [dispatch, statusValue, value, dates])
+  }, [dispatch, plan, role, status, value])
 
-  const handleFilter = val => {
+  const handleFilter = useCallback(val => {
     setValue(val)
-  }
+  }, [])
 
-  const handleStatusValue = e => {
-    setStatusValue(e.target.value)
-  }
+  const handleRoleChange = useCallback(e => {
+    setRole(e.target.value)
+  }, [])
 
-  const handleOnChangeRange = dates => {
-    const [start, end] = dates
-    if (start !== null && end !== null) {
-      setDates(dates)
-    }
-    setStartDateRange(start)
-    setEndDateRange(end)
-  }
+  const handlePlanChange = useCallback(e => {
+    setPlan(e.target.value)
+  }, [])
 
-  const columns = [
-    ...defaultColumns,
-    {
-      flex: 0.1,
-      minWidth: 140,
-      sortable: false,
-      field: 'actions',
-      headerName: 'Actions',
-      renderCell: ({ row }) => (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title='Delete Invoice'>
-            <IconButton size='small' sx={{ color: 'text.secondary' }} onClick={() => dispatch(deleteInvoice(row.id))}>
-              <Icon icon='tabler:trash' />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title='View'>
-            <IconButton
-              size='small'
-              component={Link}
-              sx={{ color: 'text.secondary' }}
-              href={`/website/preview/${row.id}`}
-            >
-              <Icon icon='tabler:eye' />
-            </IconButton>
-          </Tooltip>
-          <OptionsMenu
-            menuProps={{ sx: { '& .MuiMenuItem-root svg': { mr: 2 } } }}
-            iconButtonProps={{ size: 'small', sx: { color: 'text.secondary' } }}
-            options={[
-              {
-                text: 'Download',
-                icon: <Icon icon='tabler:download' fontSize={20} />
-              },
-              {
-                text: 'Edit',
-                href: `/apps/invoice/edit/${row.id}`,
-                icon: <Icon icon='tabler:edit' fontSize={20} />
-              },
-              {
-                text: 'Duplicate',
-                icon: <Icon icon='tabler:copy' fontSize={20} />
-              }
-            ]}
-          />
-        </Box>
-      )
-    }
-  ]
+  const handleStatusChange = useCallback(e => {
+    setStatus(e.target.value)
+  }, [])
+  const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
 
   return (
-    <DatePickerWrapper>
-      <Grid container spacing={6}>
-        {/* <Grid item xs={12}>
-          <Card>
-            <CardHeader title='Filters' />
-            <CardContent>
-              <Grid container spacing={6}>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id='invoice-status-select'>Invoice Status</InputLabel>
-
-                    <Select
-                      fullWidth
-                      value={statusValue}
-                      sx={{ mr: 4, mb: 2 }}
-                      label='Invoice Status'
-                      onChange={handleStatusValue}
-                      labelId='invoice-status-select'
-                    >
-                      <MenuItem value=''>none</MenuItem>
-                      <MenuItem value='downloaded'>Downloaded</MenuItem>
-                      <MenuItem value='draft'>Draft</MenuItem>
-                      <MenuItem value='paid'>Paid</MenuItem>
-                      <MenuItem value='partial payment'>Partial Payment</MenuItem>
-                      <MenuItem value='past due'>Past Due</MenuItem>
-                      <MenuItem value='sent'>Sent</MenuItem>
-                    </Select>
-                  </FormControl>
+    <Grid container spacing={6.5}>
+      {/* Cards Below */}
+      <Grid item xs={12}>
+        {apiData && (
+          <Grid container spacing={6}>
+            {apiData.statsHorizontalWithDetails.map((item, index) => {
+              return (
+                <Grid item xs={12} md={3} sm={6} key={index}>
+                  <CardStatsHorizontalWithDetails {...item} />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <DatePicker
-                    isClearable
-                    selectsRange
-                    monthsShown={2}
-                    endDate={endDateRange}
-                    selected={startDateRange}
-                    startDate={startDateRange}
-                    shouldCloseOnSelect={false}
-                    id='date-range-picker-months'
-                    onChange={handleOnChangeRange}
-                    customInput={
-                      <CustomInput
-                        dates={dates}
-                        setDates={setDates}
-                        label='Invoice Date'
-                        end={endDateRange}
-                        start={startDateRange}
-                      />
-                    }
-                  />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid> */}
-        <Grid item xs={12}>
-          <Card>
-            <TableHeader value={value} selectedRows={selectedRows} handleFilter={handleFilter} />
-            <DataGrid
-              autoHeight
-              pagination
-              rowHeight={62}
-              rows={store.data}
-              columns={columns}
-              checkboxSelection
-              disableRowSelectionOnClick
-              pageSizeOptions={[10, 25, 50]}
-              paginationModel={paginationModel}
-              onPaginationModelChange={setPaginationModel}
-              onRowSelectionModelChange={rows => setSelectedRows(rows)}
-            />
-          </Card>
-        </Grid>
+              )
+            })}
+          </Grid>
+        )}
       </Grid>
-    </DatePickerWrapper>
+      {/* Cards Above */}
+
+      <Grid item xs={12}>
+        <Card>
+          {/* <CardHeader title='Images' /> */}
+          {/* <CardContent>
+            <Grid container spacing={6}>
+              <Grid item sm={4} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='role-select'>Select Role</InputLabel>
+                  <Select
+                    fullWidth
+                    value={role}
+                    id='select-role'
+                    label='Select Role'
+                    labelId='role-select'
+                    onChange={handleRoleChange}
+                    inputProps={{ placeholder: 'Select Role' }}
+                  >
+                    <MenuItem value=''>Select Role</MenuItem>
+                    <MenuItem value='admin'>Admin</MenuItem>
+                    <MenuItem value='author'>Author</MenuItem>
+                    <MenuItem value='editor'>Editor</MenuItem>
+                    <MenuItem value='maintainer'>Maintainer</MenuItem>
+                    <MenuItem value='subscriber'>Subscriber</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item sm={4} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='plan-select'>Select Plan</InputLabel>
+                  <Select
+                    fullWidth
+                    value={plan}
+                    id='select-plan'
+                    label='Select Plan'
+                    labelId='plan-select'
+                    onChange={handlePlanChange}
+                    inputProps={{ placeholder: 'Select Plan' }}
+                  >
+                    <MenuItem value=''>Select Plan</MenuItem>
+                    <MenuItem value='basic'>Basic</MenuItem>
+                    <MenuItem value='company'>Company</MenuItem>
+                    <MenuItem value='enterprise'>Enterprise</MenuItem>
+                    <MenuItem value='team'>Team</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item sm={4} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='status-select'>Select Status</InputLabel>
+                  <Select
+                    fullWidth
+                    value={status}
+                    id='select-status'
+                    label='Select Status'
+                    labelId='status-select'
+                    onChange={handleStatusChange}
+                    inputProps={{ placeholder: 'Select Role' }}
+                  >
+                    <MenuItem value=''>Select Role</MenuItem>
+                    <MenuItem value='pending'>Pending</MenuItem>
+                    <MenuItem value='active'>Active</MenuItem>
+                    <MenuItem value='inactive'>Inactive</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </CardContent> */}
+          {/* <Divider sx={{ m: '0 !important' }} /> */}
+          <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
+          <DataGrid
+            autoHeight
+            rowHeight={62}
+            rows={store.data}
+            columns={columns}
+            disableRowSelectionOnClick
+            pageSizeOptions={[10, 25, 50]}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+          />
+        </Card>
+      </Grid>
+
+      <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
+    </Grid>
   )
 }
 
-export default InvoiceList
+// export const getStaticProps = async () => {
+//   const res = await axios.get('/cards/statistics')
+//   const apiData = res.data
+
+//   return {
+//     props: {
+//       apiData
+//     }
+//   }
+// }
+
+export default UserList
